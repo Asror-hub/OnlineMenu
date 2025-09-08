@@ -30,6 +30,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Restaurant-Id', 'X-Restaurant-Slug', 'X-Session-Id']
 }));
 
+// Health check endpoint for Render
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    service: 'Online Menu Backend API'
+  });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
