@@ -131,6 +131,21 @@ class ApiService {
     return response.json();
   }
 
+  // Helper method to handle network errors
+  async handleNetworkError(error) {
+    console.error('🔍 Network Error Details:', error);
+    
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('Network error: Unable to connect to the server. Please check your internet connection and try again.');
+    }
+    
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout: The server took too long to respond. Please try again.');
+    }
+    
+    throw error;
+  }
+
   // Restaurant Settings APIs
   async getRestaurantSettings() {
     const response = await fetch(`${this.baseURL}${ENDPOINTS.SETTINGS.BASE}`, {
@@ -152,18 +167,31 @@ class ApiService {
 
   // Authentication APIs
   async login(credentials) {
-    const response = await fetch(`${this.baseURL}${ENDPOINTS.AUTH.LOGIN}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password
-      })
-    });
+    try {
+      const url = `${this.baseURL}${ENDPOINTS.AUTH.LOGIN}`;
+      console.log('🔍 API Login - Base URL:', this.baseURL);
+      console.log('🔍 API Login - Full URL:', url);
+      console.log('🔍 API Login - Credentials:', { email: credentials.email, password: '***' });
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password
+        })
+      });
 
-    return this.handleResponse(response);
+      console.log('🔍 API Login - Response status:', response.status);
+      console.log('🔍 API Login - Response headers:', response.headers);
+      
+      return this.handleResponse(response);
+    } catch (error) {
+      console.error('🔍 API Login - Error:', error);
+      return this.handleNetworkError(error);
+    }
   }
 
   async validateToken() {

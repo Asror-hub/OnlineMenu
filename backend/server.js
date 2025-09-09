@@ -30,6 +30,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Restaurant-Id', 'X-Restaurant-Slug', 'X-Session-Id']
 }));
 
+// Handle CORS preflight requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Restaurant-Id, X-Restaurant-Slug, X-Session-Id');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
 // Health check endpoint for Render
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
