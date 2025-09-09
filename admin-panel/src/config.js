@@ -1,8 +1,24 @@
 // API Configuration
+const getBaseURL = () => {
+  // Check if we're in production
+  if (process.env.NODE_ENV === 'production') {
+    // Use the production backend URL
+    return process.env.REACT_APP_API_URL || 'https://online-menu-backend.onrender.com';
+  }
+  // Development fallback
+  return process.env.REACT_APP_API_URL || 'http://localhost:5000';
+};
+
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+  BASE_URL: getBaseURL(),
   TIMEOUT: 10000, // 10 seconds
 };
+
+// Debug API configuration
+console.log('🔍 API Config Debug:');
+console.log('  REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('  BASE_URL:', API_CONFIG.BASE_URL);
+console.log('  NODE_ENV:', process.env.NODE_ENV);
 
 // Backend endpoints
 export const ENDPOINTS = {
