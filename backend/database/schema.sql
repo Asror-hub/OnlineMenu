@@ -49,6 +49,19 @@ CREATE TABLE IF NOT EXISTS restaurant_users (
     UNIQUE(restaurant_id, user_id)
 );
 
+-- Restaurant staff (separate from restaurant_users for more detailed staff management)
+CREATE TABLE IF NOT EXISTS restaurant_staff (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR(20) DEFAULT 'staff' CHECK (role IN ('owner', 'manager', 'staff', 'waiter', 'chef')),
+    permissions JSONB DEFAULT '{}',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(restaurant_id, user_id)
+);
+
 -- Menu categories
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
@@ -61,11 +74,27 @@ CREATE TABLE IF NOT EXISTS categories (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Menu subcategories
+CREATE TABLE IF NOT EXISTS subcategories (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+    category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    icon VARCHAR(100),
+    position INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Menu items
 CREATE TABLE IF NOT EXISTS menu_items (
     id SERIAL PRIMARY KEY,
     restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
+    subcategory_id INTEGER REFERENCES subcategories(id) ON DELETE SET NULL,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
@@ -123,8 +152,8 @@ CREATE TABLE IF NOT EXISTS reservations (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Feedback
-CREATE TABLE IF NOT EXISTS feedback (
+-- Feedback (note: code uses 'feedbacks' table name)
+CREATE TABLE IF NOT EXISTS feedbacks (
     id SERIAL PRIMARY KEY,
     restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
     order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
@@ -161,16 +190,34 @@ CREATE TABLE IF NOT EXISTS restaurant_branding (
     UNIQUE(restaurant_id)
 );
 
+-- Restaurant content (CMS pages)
+CREATE TABLE IF NOT EXISTS restaurant_content (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+    page_type VARCHAR(50) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    content TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(restaurant_id, page_type)
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_orders_restaurant_id ON orders(restaurant_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
 CREATE INDEX IF NOT EXISTS idx_menu_items_restaurant_id ON menu_items(restaurant_id);
 CREATE INDEX IF NOT EXISTS idx_menu_items_category_id ON menu_items(category_id);
+CREATE INDEX IF NOT EXISTS idx_menu_items_subcategory_id ON menu_items(subcategory_id);
 CREATE INDEX IF NOT EXISTS idx_reservations_restaurant_id ON reservations(restaurant_id);
 CREATE INDEX IF NOT EXISTS idx_reservations_date ON reservations(reservation_date);
 CREATE INDEX IF NOT EXISTS idx_categories_restaurant_id ON categories(restaurant_id);
-CREATE INDEX IF NOT EXISTS idx_feedback_restaurant_id ON feedback(restaurant_id);
+CREATE INDEX IF NOT EXISTS idx_subcategories_restaurant_id ON subcategories(restaurant_id);
+CREATE INDEX IF NOT EXISTS idx_subcategories_category_id ON subcategories(category_id);
+CREATE INDEX IF NOT EXISTS idx_feedbacks_restaurant_id ON feedbacks(restaurant_id);
+CREATE INDEX IF NOT EXISTS idx_restaurant_staff_restaurant_id ON restaurant_staff(restaurant_id);
+CREATE INDEX IF NOT EXISTS idx_restaurant_content_restaurant_id ON restaurant_content(restaurant_id);
 
 -- Insert default admin user
 INSERT INTO users (username, email, password_hash, role) 
@@ -253,8 +300,11 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_restaurants_updated_at BEFORE UPDATE ON restaurants FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_subcategories_updated_at BEFORE UPDATE ON subcategories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_menu_items_updated_at BEFORE UPDATE ON menu_items FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_reservations_updated_at BEFORE UPDATE ON reservations FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_restaurant_settings_updated_at BEFORE UPDATE ON restaurant_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_restaurant_branding_updated_at BEFORE UPDATE ON restaurant_branding FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_restaurant_staff_updated_at BEFORE UPDATE ON restaurant_staff FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_restaurant_content_updated_at BEFORE UPDATE ON restaurant_content FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
