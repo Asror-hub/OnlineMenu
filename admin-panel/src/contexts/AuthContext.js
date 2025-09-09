@@ -201,6 +201,10 @@ export const AuthProvider = ({ children }) => {
         
         // Use window.location.href for more reliable redirect
         window.location.href = redirectUrl;
+      } else {
+        console.warn('AuthContext: No restaurant_slug found, redirecting to default admin');
+        // Fallback to a default admin route or show an error
+        window.location.href = '/admin';
       }
       
       return { success: true, user: result.user };

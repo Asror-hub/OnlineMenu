@@ -42,6 +42,23 @@ app.get('/api/health', (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Online Menu Backend API',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      test: '/test',
+      auth: '/api/auth',
+      menu: '/api/menu',
+      orders: '/api/orders',
+      dashboard: '/api/dashboard'
+    }
+  });
+});
+
 // Simple test route
 app.get('/test', (req, res) => {
   res.json({ message: 'Server is working' });

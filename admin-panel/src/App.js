@@ -30,6 +30,15 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
+              {/* DEFAULT ADMIN ROUTE (fallback) */}
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <RestaurantLayout>
+                    <Dashboard />
+                  </RestaurantLayout>
+                </ProtectedRoute>
+              } />
+              
               {/* COMPLETELY SEPARATE RESTAURANT ADMIN PANELS */}
               {/* Each restaurant gets its own unique admin panel */}
               <Route path="/:restaurantSlug/admin" element={
