@@ -123,9 +123,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
 -- Add missing columns to restaurant_content table
 ALTER TABLE restaurant_content ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
 
--- Add missing columns to restaurant_settings table
-ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS restaurant_name VARCHAR(100);
-ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS description TEXT;
+-- Add missing columns to restaurant_settings table (already added to table definition above)
 
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
@@ -191,8 +189,10 @@ CREATE TABLE IF NOT EXISTS feedbacks (
 CREATE TABLE IF NOT EXISTS restaurant_settings (
     id SERIAL PRIMARY KEY,
     restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
-    setting_key VARCHAR(100) NOT NULL,
+    setting_key VARCHAR(100),
     setting_value TEXT,
+    restaurant_name VARCHAR(100),
+    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(restaurant_id, setting_key)
