@@ -163,31 +163,63 @@ INSERT INTO restaurants (name, slug, description, phone, email, address, primary
 VALUES ('Sample Restaurant', 'sample-restaurant', 'A sample restaurant for testing', '+1234567890', 'info@samplerestaurant.com', '123 Main St, City, State', '#FF6B6B', '#FFFFFF')
 ON CONFLICT (slug) DO NOTHING;
 
--- Get the sample restaurant ID
-DO $$
-DECLARE
-    restaurant_id INTEGER;
-BEGIN
-    SELECT id INTO restaurant_id FROM restaurants WHERE slug = 'sample-restaurant';
-    
-    -- Insert sample categories
-    INSERT INTO categories (restaurant_id, name, description, sort_order) VALUES
-    (restaurant_id, 'Appetizers', 'Start your meal with our delicious appetizers', 1),
-    (restaurant_id, 'Main Courses', 'Our signature main dishes', 2),
-    (restaurant_id, 'Desserts', 'Sweet endings to your meal', 3),
-    (restaurant_id, 'Beverages', 'Refreshing drinks', 4)
-    ON CONFLICT DO NOTHING;
-    
-    -- Insert sample menu items
-    INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) VALUES
-    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Appetizers' LIMIT 1), 'Caesar Salad', 'Fresh romaine lettuce with caesar dressing', 8.99, true),
-    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Appetizers' LIMIT 1), 'Buffalo Wings', 'Spicy chicken wings with ranch dip', 12.99, true),
-    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Main Courses' LIMIT 1), 'Grilled Salmon', 'Fresh salmon with lemon butter sauce', 24.99, true),
-    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Main Courses' LIMIT 1), 'Beef Steak', 'Tender beef steak cooked to perfection', 28.99, true),
-    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Desserts' LIMIT 1), 'Chocolate Cake', 'Rich chocolate cake with vanilla ice cream', 6.99, true),
-    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Beverages' LIMIT 1), 'Fresh Orange Juice', 'Freshly squeezed orange juice', 3.99, true)
-    ON CONFLICT DO NOTHING;
-END $$;
+-- Insert sample categories for the sample restaurant
+INSERT INTO categories (restaurant_id, name, description, sort_order) 
+SELECT r.id, 'Appetizers', 'Start your meal with our delicious appetizers', 1
+FROM restaurants r WHERE r.slug = 'sample-restaurant'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO categories (restaurant_id, name, description, sort_order) 
+SELECT r.id, 'Main Courses', 'Our signature main dishes', 2
+FROM restaurants r WHERE r.slug = 'sample-restaurant'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO categories (restaurant_id, name, description, sort_order) 
+SELECT r.id, 'Desserts', 'Sweet endings to your meal', 3
+FROM restaurants r WHERE r.slug = 'sample-restaurant'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO categories (restaurant_id, name, description, sort_order) 
+SELECT r.id, 'Beverages', 'Refreshing drinks', 4
+FROM restaurants r WHERE r.slug = 'sample-restaurant'
+ON CONFLICT DO NOTHING;
+
+-- Insert sample menu items
+INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) 
+SELECT r.id, c.id, 'Caesar Salad', 'Fresh romaine lettuce with caesar dressing', 8.99, true
+FROM restaurants r, categories c 
+WHERE r.slug = 'sample-restaurant' AND c.restaurant_id = r.id AND c.name = 'Appetizers'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) 
+SELECT r.id, c.id, 'Buffalo Wings', 'Spicy chicken wings with ranch dip', 12.99, true
+FROM restaurants r, categories c 
+WHERE r.slug = 'sample-restaurant' AND c.restaurant_id = r.id AND c.name = 'Appetizers'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) 
+SELECT r.id, c.id, 'Grilled Salmon', 'Fresh salmon with lemon butter sauce', 24.99, true
+FROM restaurants r, categories c 
+WHERE r.slug = 'sample-restaurant' AND c.restaurant_id = r.id AND c.name = 'Main Courses'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) 
+SELECT r.id, c.id, 'Beef Steak', 'Tender beef steak cooked to perfection', 28.99, true
+FROM restaurants r, categories c 
+WHERE r.slug = 'sample-restaurant' AND c.restaurant_id = r.id AND c.name = 'Main Courses'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) 
+SELECT r.id, c.id, 'Chocolate Cake', 'Rich chocolate cake with vanilla ice cream', 6.99, true
+FROM restaurants r, categories c 
+WHERE r.slug = 'sample-restaurant' AND c.restaurant_id = r.id AND c.name = 'Desserts'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) 
+SELECT r.id, c.id, 'Fresh Orange Juice', 'Freshly squeezed orange juice', 3.99, true
+FROM restaurants r, categories c 
+WHERE r.slug = 'sample-restaurant' AND c.restaurant_id = r.id AND c.name = 'Beverages'
+ON CONFLICT DO NOTHING;
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
