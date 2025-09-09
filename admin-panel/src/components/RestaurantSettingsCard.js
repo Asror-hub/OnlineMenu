@@ -206,10 +206,19 @@ const RestaurantSettingsCard = ({ restaurant }) => {
 
   // Generate restaurant URLs
   const generateUrls = () => {
-    const baseUrl = process.env.REACT_APP_CLIENT_URL || 'http://localhost:3000';
-    const adminUrl = process.env.REACT_APP_ADMIN_URL || 'http://localhost:3002';
+    const baseUrl = process.env.REACT_APP_CLIENT_URL || 'https://onlinemenuclient.onrender.com';
+    const adminUrl = process.env.REACT_APP_ADMIN_URL || 'https://onlinemenuadmin.onrender.com';
     
-    // Extract domain from baseUrl (e.g., "localhost:3000" from "http://localhost:3000")
+    // For production, use subdomains for complete restaurant isolation
+    if (process.env.NODE_ENV === 'production') {
+      return {
+        website: `https://${restaurant.slug}.onlinemenuclient.onrender.com`,
+        tableQR: `https://${restaurant.slug}.onlinemenuclient.onrender.com/table/{tableNumber}`,
+        admin: `https://onlinemenuadmin.onrender.com/${restaurant.slug}/admin`
+      };
+    }
+    
+    // For development, use localhost with subdomains
     const domain = baseUrl.replace(/^https?:\/\//, '');
     const adminDomain = adminUrl.replace(/^https?:\/\//, '');
     

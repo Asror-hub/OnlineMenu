@@ -174,13 +174,24 @@ class DNSService {
      * @returns {Object} - Generated URLs
      */
     generateRestaurantURLs(slug, restaurantId) {
-        const baseUrl = process.env.CLIENT_APP_URL || `https://${this.baseDomain}`;
-        const adminUrl = process.env.ADMIN_APP_URL || `https://admin.${this.baseDomain}`;
+        const baseUrl = process.env.CLIENT_APP_URL || 'https://onlinemenuclient.onrender.com';
+        const adminUrl = process.env.ADMIN_APP_URL || 'https://onlinemenuadmin.onrender.com';
 
+        // For production, use subdomains for complete restaurant isolation
+        if (process.env.NODE_ENV === 'production') {
+            return {
+                website: `https://${slug}.onlinemenuclient.onrender.com`,
+                tableQR: `https://${slug}.onlinemenuclient.onrender.com/table/{tableNumber}`,
+                admin: `https://onlinemenuadmin.onrender.com/${slug}/admin`,
+                api: `${process.env.API_BASE_URL || 'https://online-menu-backend.onrender.com/api'}/restaurants/${restaurantId}`
+            };
+        }
+
+        // For development, use localhost with subdomains
         return {
-            website: `${baseUrl}/${slug}`,
-            tableQR: `${baseUrl}/${slug}/table/{tableNumber}`,
-            admin: `${adminUrl}/restaurants/${restaurantId}`,
+            website: `http://${slug}.localhost:3000`,
+            tableQR: `http://${slug}.localhost:3000/table/{tableNumber}`,
+            admin: `http://${slug}.localhost:3002/admin`,
             api: `${process.env.API_BASE_URL || 'http://localhost:5000/api'}/restaurants/${restaurantId}`
         };
     }
