@@ -108,6 +108,13 @@ CREATE TABLE IF NOT EXISTS menu_items (
 -- Add missing columns to existing tables (for production updates)
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS subcategory_id INTEGER REFERENCES subcategories(id) ON DELETE SET NULL;
 
+-- Add missing columns to restaurants table
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS domain VARCHAR(255);
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS google_maps_link TEXT;
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS open_time TIME DEFAULT '09:00:00';
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS close_time TIME DEFAULT '22:00:00';
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'UTC';
+
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
