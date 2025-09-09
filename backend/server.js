@@ -121,6 +121,83 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Create default admin user endpoint
+app.post('/api/create-default-admin', async (req, res) => {
+  try {
+    const { pool } = require('./database/connection');
+    const bcrypt = require('bcryptjs');
+    
+    // Check if any users exist
+    const usersResult = await pool.query('SELECT COUNT(*) as user_count FROM users');
+    const userCount = parseInt(usersResult.rows[0].user_count);
+    
+    if (userCount > 0) {
+      return res.json({
+        success: true,
+        message: 'Users already exist',
+        userCount
+      });
+    }
+    
+    // Create default restaurant
+    const restaurantResult = await pool.query(`
+      INSERT INTO restaurants (name, slug, description, primary_color, secondary_color, is_active)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id, name, slug
+    `, [
+      'Default Restaurant',
+      'default-restaurant',
+      'Default restaurant for testing',
+      '#007bff',
+      '#6c757d',
+      true
+    ]);
+    
+    const restaurant = restaurantResult.rows[0];
+    
+    // Create default admin user
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const userResult = await pool.query(`
+      INSERT INTO users (email, password, name, role, restaurant_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id, email, name, role, restaurant_id
+    `, [
+      'admin@example.com',
+      hashedPassword,
+      'Admin User',
+      'admin',
+      restaurant.id
+    ]);
+    
+    const user = userResult.rows[0];
+    
+    res.json({
+      success: true,
+      message: 'Default admin user created successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        restaurant_id: user.restaurant_id,
+        restaurant_slug: restaurant.slug,
+        restaurant_name: restaurant.name
+      },
+      credentials: {
+        email: 'admin@example.com',
+        password: 'admin123'
+      }
+    });
+  } catch (error) {
+    console.error('Error creating default admin:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create default admin user',
+      error: error.message
+    });
+  }
+});
+
 // Public orders endpoint (bypasses all middleware)
 app.get('/api/orders/public/active', async (req, res) => {
   try {
