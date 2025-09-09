@@ -127,6 +127,16 @@ ALTER TABLE restaurant_content ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEF
 -- Remove NOT NULL constraint from setting_key to allow direct inserts
 ALTER TABLE restaurant_settings ALTER COLUMN setting_key DROP NOT NULL;
 
+-- Add ALL missing columns to restaurant_settings table for social media and WiFi settings
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS wifi_name VARCHAR(100);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS wifi_password VARCHAR(100);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS instagram VARCHAR(200);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS facebook VARCHAR(200);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS trip_advisor VARCHAR(200);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(50);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS telegram VARCHAR(50);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS custom_social_media JSONB DEFAULT '[]';
+
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
@@ -195,6 +205,14 @@ CREATE TABLE IF NOT EXISTS restaurant_settings (
     setting_value TEXT,
     restaurant_name VARCHAR(100),
     description TEXT,
+    wifi_name VARCHAR(100),
+    wifi_password VARCHAR(100),
+    instagram VARCHAR(200),
+    facebook VARCHAR(200),
+    trip_advisor VARCHAR(200),
+    whatsapp VARCHAR(50),
+    telegram VARCHAR(50),
+    custom_social_media JSONB DEFAULT '[]',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(restaurant_id, setting_key)
