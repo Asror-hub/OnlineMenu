@@ -57,6 +57,38 @@ app.post('/api/feedbacks/test', (req, res) => {
   });
 });
 
+// Test database connection endpoint
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const { pool } = require('./database/connection');
+    
+    // Test basic connection
+    const result = await pool.query('SELECT NOW() as current_time');
+    
+    // Test if tables exist
+    const tablesResult = await pool.query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      ORDER BY table_name
+    `);
+    
+    res.json({
+      success: true,
+      message: 'Database connection successful',
+      currentTime: result.rows[0].current_time,
+      tables: tablesResult.rows.map(row => row.table_name)
+    });
+  } catch (error) {
+    console.error('Database test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Database connection failed',
+      error: error.message
+    });
+  }
+});
+
 // Public orders endpoint (bypasses all middleware)
 app.get('/api/orders/public/active', async (req, res) => {
   try {
