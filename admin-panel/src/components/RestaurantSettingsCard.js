@@ -209,23 +209,11 @@ const RestaurantSettingsCard = ({ restaurant }) => {
     const baseUrl = process.env.REACT_APP_CLIENT_URL || 'https://onlinemenuclient.onrender.com';
     const adminUrl = process.env.REACT_APP_ADMIN_URL || 'https://onlinemenuadmin.onrender.com';
     
-    // For production, use subdomains for complete restaurant isolation
-    if (process.env.NODE_ENV === 'production') {
-      return {
-        website: `https://${restaurant.slug}.onlinemenuclient.onrender.com`,
-        tableQR: `https://${restaurant.slug}.onlinemenuclient.onrender.com/table/{tableNumber}`,
-        admin: `https://onlinemenuadmin.onrender.com/${restaurant.slug}/admin`
-      };
-    }
-    
-    // For development, use localhost with subdomains
-    const domain = baseUrl.replace(/^https?:\/\//, '');
-    const adminDomain = adminUrl.replace(/^https?:\/\//, '');
-    
+    // Use path-based routing for better compatibility and easier setup
     return {
-      website: `http://${restaurant.slug}.${domain}`,
-      tableQR: `http://${restaurant.slug}.${domain}/table/{tableNumber}`,
-      admin: `http://${restaurant.slug}.${adminDomain}/admin`
+      website: `${baseUrl}/${restaurant.slug}`,
+      tableQR: `${baseUrl}/${restaurant.slug}/table/{tableNumber}`,
+      admin: `${adminUrl}/${restaurant.slug}/admin`
     };
   };
 
