@@ -207,19 +207,22 @@ export const AuthProvider = ({ children }) => {
       console.log('AuthContext: restaurant_slug value:', result.user.restaurant_slug);
       console.log('AuthContext: restaurant_slug type:', typeof result.user.restaurant_slug);
       
-      if (result.user.restaurant_slug && result.user.restaurant_slug !== 'null' && result.user.restaurant_slug !== 'undefined') {
-        console.log('AuthContext: Auto-redirecting to admin panel');
-        const redirectUrl = `/${result.user.restaurant_slug}/admin`;
-        console.log('AuthContext: Redirect URL:', redirectUrl);
-        
-        // Use window.location.href for more reliable redirect
-        window.location.href = redirectUrl;
-      } else {
-        console.warn('AuthContext: No valid restaurant_slug found, redirecting to default admin');
-        console.log('AuthContext: restaurant_slug was:', result.user.restaurant_slug);
-        // Fallback to a default admin route or show an error
-        window.location.href = '/admin';
-      }
+      // Add a small delay to ensure state is properly set before redirect
+      setTimeout(() => {
+        if (result.user.restaurant_slug && result.user.restaurant_slug !== 'null' && result.user.restaurant_slug !== 'undefined') {
+          console.log('AuthContext: Auto-redirecting to admin panel');
+          const redirectUrl = `/${result.user.restaurant_slug}/admin`;
+          console.log('AuthContext: Redirect URL:', redirectUrl);
+          
+          // Use window.location.replace for more reliable redirect
+          window.location.replace(redirectUrl);
+        } else {
+          console.warn('AuthContext: No valid restaurant_slug found, redirecting to default admin');
+          console.log('AuthContext: restaurant_slug was:', result.user.restaurant_slug);
+          // Fallback to a default admin route or show an error
+          window.location.replace('/admin');
+        }
+      }, 100);
       
       return { success: true, user: result.user };
     } catch (error) {
