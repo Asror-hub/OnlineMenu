@@ -189,9 +189,18 @@ export const AuthProvider = ({ children }) => {
         restaurant_name: result.user.restaurant_name
       };
       
-      console.log('AuthContext: Setting user data:', userData);
+      console.log('🔍 AuthContext: Setting user data:', userData);
       setUser(userData);
       setRestaurantId(result.user.restaurant_id);
+      
+      // Add a small delay to ensure state is updated
+      setTimeout(() => {
+        console.log('🔍 AuthContext: State after login:', {
+          isAuthenticated: true,
+          user: userData,
+          restaurantId: result.user.restaurant_id
+        });
+      }, 100);
       
       // Auto-redirect after successful login
       console.log('AuthContext: Login result user data:', result.user);
