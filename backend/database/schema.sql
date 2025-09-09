@@ -180,12 +180,12 @@ BEGIN
     
     -- Insert sample menu items
     INSERT INTO menu_items (restaurant_id, category_id, name, description, price, is_available) VALUES
-    (restaurant_id, (SELECT id FROM categories WHERE restaurant_id = restaurant_id AND name = 'Appetizers' LIMIT 1), 'Caesar Salad', 'Fresh romaine lettuce with caesar dressing', 8.99, true),
-    (restaurant_id, (SELECT id FROM categories WHERE restaurant_id = restaurant_id AND name = 'Appetizers' LIMIT 1), 'Buffalo Wings', 'Spicy chicken wings with ranch dip', 12.99, true),
-    (restaurant_id, (SELECT id FROM categories WHERE restaurant_id = restaurant_id AND name = 'Main Courses' LIMIT 1), 'Grilled Salmon', 'Fresh salmon with lemon butter sauce', 24.99, true),
-    (restaurant_id, (SELECT id FROM categories WHERE restaurant_id = restaurant_id AND name = 'Main Courses' LIMIT 1), 'Beef Steak', 'Tender beef steak cooked to perfection', 28.99, true),
-    (restaurant_id, (SELECT id FROM categories WHERE restaurant_id = restaurant_id AND name = 'Desserts' LIMIT 1), 'Chocolate Cake', 'Rich chocolate cake with vanilla ice cream', 6.99, true),
-    (restaurant_id, (SELECT id FROM categories WHERE restaurant_id = restaurant_id AND name = 'Beverages' LIMIT 1), 'Fresh Orange Juice', 'Freshly squeezed orange juice', 3.99, true)
+    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Appetizers' LIMIT 1), 'Caesar Salad', 'Fresh romaine lettuce with caesar dressing', 8.99, true),
+    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Appetizers' LIMIT 1), 'Buffalo Wings', 'Spicy chicken wings with ranch dip', 12.99, true),
+    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Main Courses' LIMIT 1), 'Grilled Salmon', 'Fresh salmon with lemon butter sauce', 24.99, true),
+    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Main Courses' LIMIT 1), 'Beef Steak', 'Tender beef steak cooked to perfection', 28.99, true),
+    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Desserts' LIMIT 1), 'Chocolate Cake', 'Rich chocolate cake with vanilla ice cream', 6.99, true),
+    (restaurant_id, (SELECT c.id FROM categories c WHERE c.restaurant_id = restaurant_id AND c.name = 'Beverages' LIMIT 1), 'Fresh Orange Juice', 'Freshly squeezed orange juice', 3.99, true)
     ON CONFLICT DO NOTHING;
 END $$;
 
