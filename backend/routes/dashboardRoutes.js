@@ -57,7 +57,7 @@ router.get('/analytics', async (req, res) => {
                 (SELECT COUNT(*) FROM orders WHERE restaurant_id = $1 AND status = 'cancelled') as cancelled_orders,
                 (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE restaurant_id = $1) as total_revenue,
                 (SELECT COALESCE(AVG(total_amount), 0) FROM orders WHERE restaurant_id = $1) as avg_order_value,
-                (SELECT COUNT(*) FROM menu_items WHERE restaurant_id = $1 AND is_active = true) as active_menu_items,
+                (SELECT COUNT(*) FROM menu_items WHERE restaurant_id = $1 AND is_available = true) as active_menu_items,
                 (SELECT COUNT(*) FROM users WHERE restaurant_id = $1) as total_users
         `;
         
@@ -243,7 +243,7 @@ router.get('/top-selling-items', async (req, res) => {
             FROM menu_items mi
             LEFT JOIN order_items oi ON mi.id = oi.menu_item_id
             LEFT JOIN orders o ON oi.order_id = o.id AND o.restaurant_id = $1
-            WHERE mi.restaurant_id = $1 AND mi.is_active = true
+            WHERE mi.restaurant_id = $1 AND mi.is_available = true
             GROUP BY mi.id, mi.name, mi.price
             HAVING COALESCE(SUM(oi.quantity), 0) > 0
             ORDER BY total_orders DESC
@@ -444,7 +444,7 @@ router.get('/overview', async (req, res) => {
                 (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE restaurant_id = $1 AND created_at >= CURRENT_DATE - INTERVAL '7 days') as week_revenue,
                 (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE restaurant_id = $1 AND created_at >= CURRENT_DATE - INTERVAL '30 days') as month_revenue,
                 (SELECT COUNT(DISTINCT user_id) FROM orders WHERE restaurant_id = $1) as unique_customers,
-                (SELECT COUNT(*) FROM menu_items WHERE restaurant_id = $1 AND is_active = true) as active_items
+                (SELECT COUNT(*) FROM menu_items WHERE restaurant_id = $1 AND is_available = true) as active_items
         `;
 
         let result;
