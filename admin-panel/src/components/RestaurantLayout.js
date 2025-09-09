@@ -41,6 +41,7 @@ const RestaurantLayout = ({ children }) => {
   }
 
   if (error || !isValidContext()) {
+    console.log('RestaurantLayout: Error or invalid context', { error, isValidContext: isValidContext() });
     return (
       <div style={{ 
         display: 'flex', 
@@ -48,9 +49,24 @@ const RestaurantLayout = ({ children }) => {
         alignItems: 'center', 
         height: '100vh',
         fontSize: '18px',
-        color: '#dc3545'
+        color: '#dc3545',
+        flexDirection: 'column',
+        gap: '20px'
       }}>
-        {error || 'Invalid restaurant context. Please log in again.'}
+        <div>{error || 'Invalid restaurant context. Please log in again.'}</div>
+        <button 
+          onClick={() => window.location.href = '/login'}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Go to Login
+        </button>
       </div>
     );
   }

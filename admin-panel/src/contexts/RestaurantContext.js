@@ -61,8 +61,11 @@ export const RestaurantProvider = ({ children }) => {
 
   // Auto-load restaurant context when user data becomes available
   useEffect(() => {
-    if (user && user.restaurant_slug && !restaurant) {
-      console.log('Auto-loading restaurant context for user:', user.restaurant_slug);
+    if (user && !restaurant) {
+      console.log('Auto-loading restaurant context for user:', user);
+      console.log('User restaurant_slug:', user.restaurant_slug);
+      console.log('User restaurant_id:', user.restaurant_id);
+      
       // Call the function directly instead of through dependency
       const loadContext = async () => {
         try {
@@ -77,17 +80,17 @@ export const RestaurantProvider = ({ children }) => {
           // Create restaurant object from user data
           const restaurantData = {
             id: user.restaurant_id,
-            slug: user.restaurant_slug,
-            name: user.restaurant_name
+            slug: user.restaurant_slug || 'default-restaurant',
+            name: user.restaurant_name || 'My Restaurant'
           };
           
-          // SECURITY CHECK: Verify the restaurant slug matches the URL
+          // SECURITY CHECK: Verify the restaurant slug matches the URL (only if slug exists)
           if (user.restaurant_slug && restaurantData.slug !== user.restaurant_slug) {
             throw new Error('Restaurant slug mismatch - security violation');
           }
           
           setRestaurant(restaurantData);
-          setRestaurantSlug(user.restaurant_slug);
+          setRestaurantSlug(user.restaurant_slug || 'default-restaurant');
           
           // Store restaurant info in localStorage for persistence
           localStorage.setItem('currentRestaurant', JSON.stringify(restaurantData));
