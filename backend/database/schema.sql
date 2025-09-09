@@ -124,6 +124,8 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
 ALTER TABLE restaurant_content ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
 
 -- Add missing columns to restaurant_settings table (already added to table definition above)
+-- Remove NOT NULL constraint from setting_key to allow direct inserts
+ALTER TABLE restaurant_settings ALTER COLUMN setting_key DROP NOT NULL;
 
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
