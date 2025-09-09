@@ -40,6 +40,12 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
       setLoading(true);
       setError(null);
 
+      // Get fresh restaurant context
+      const currentContext = getRestaurantContext();
+      if (!currentContext.hasRestaurantContext) {
+        throw new Error('No restaurant context found');
+      }
+
       // Load restaurant info and settings in parallel
       const [restaurantData, settingsData] = await Promise.all([
         api.getRestaurantInfo(),

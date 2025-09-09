@@ -29,34 +29,49 @@ export const ENDPOINTS = {
 // Restaurant context detection
 export const getRestaurantContext = () => {
   const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
   
-  // Extract subdomain from hostname
-  const parts = hostname.split('.');
   let restaurantSlug = null;
+  let isSubdomain = false;
+  let isPathBased = false;
   
-  // Handle different domain patterns:
-  // - localhost:3000 (development)
-  // - restaurant-slug.localhost:3000 (development with subdomain)
-  // - restaurant-slug.yourapp.com (production)
+  // Check for subdomain-based routing first
+  const parts = hostname.split('.');
   if (parts.length > 1) {
     if (hostname.includes('localhost')) {
       // Development: restaurant-slug.localhost:3000
       restaurantSlug = parts[0];
+      isSubdomain = true;
     } else {
       // Production: restaurant-slug.yourapp.com
       restaurantSlug = parts[0];
+      isSubdomain = true;
+    }
+    
+    // Skip common subdomains
+    if (restaurantSlug && ['www', 'api', 'admin', 'app'].includes(restaurantSlug)) {
+      restaurantSlug = null;
+      isSubdomain = false;
     }
   }
   
-  // Skip common subdomains
-  if (restaurantSlug && ['www', 'api', 'admin', 'app'].includes(restaurantSlug)) {
-    restaurantSlug = null;
+  // If no subdomain found, check for path-based routing
+  if (!restaurantSlug && pathname && pathname !== '/') {
+    // Extract restaurant slug from path: /asror3 -> asror3
+    const pathParts = pathname.split('/').filter(part => part.length > 0);
+    if (pathParts.length > 0) {
+      restaurantSlug = pathParts[0];
+      isPathBased = true;
+    }
   }
   
   return {
     restaurantSlug,
-    isSubdomain: !!restaurantSlug,
+    isSubdomain,
+    isPathBased,
+    hasRestaurantContext: !!(restaurantSlug && (isSubdomain || isPathBased)),
     hostname,
+    pathname,
   };
 };
 

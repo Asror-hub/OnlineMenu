@@ -143,9 +143,12 @@ class ApiService {
     // Add request interceptor to include restaurant context
     this.api.interceptors.request.use(
       (config) => {
+        // Get fresh restaurant context on each request
+        const currentContext = getRestaurantContext();
+        
         // Add restaurant context headers
-        if (this.restaurantContext.restaurantSlug) {
-          config.headers['X-Restaurant-Slug'] = this.restaurantContext.restaurantSlug;
+        if (currentContext.restaurantSlug) {
+          config.headers['X-Restaurant-Slug'] = currentContext.restaurantSlug;
         }
         
         // Add session ID for guest orders

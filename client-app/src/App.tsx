@@ -158,9 +158,9 @@ const AppContent: React.FC = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [showOrdersView, setShowOrdersView] = useState(false);
 
-  // Check if we have a restaurant context (subdomain)
+  // Check if we have a restaurant context (subdomain or path-based)
   const restaurantContext = getRestaurantContext();
-  const hasRestaurantContext = restaurantContext.isSubdomain;
+  const hasRestaurantContext = restaurantContext.hasRestaurantContext;
 
   // Load menu data
   useEffect(() => {
