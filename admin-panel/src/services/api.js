@@ -47,56 +47,62 @@ class ApiService {
       return {
         'Content-Type': 'application/json',
         'Authorization': '',
-        'X-Restaurant-Id': ''
+        'X-Restaurant-Id': '',
+        'X-Restaurant-Slug': ''
       };
     }
     
     try {
       const token = localStorage.getItem('adminToken');
       let restaurantId = null;
+      let restaurantSlug = null;
       
-      // Try to get restaurant ID from JWT token first
+      // Try to get restaurant data from JWT token first
       if (token && token !== 'dev-token-for-testing') {
         try {
-          // Decode JWT token to get restaurant ID
+          // Decode JWT token to get restaurant data
           const payload = JSON.parse(atob(token.split('.')[1]));
           restaurantId = payload.restaurantId || payload.restaurant_id;
-          console.log('🔍 API: Using restaurant ID from JWT token:', restaurantId);
+          restaurantSlug = payload.restaurantSlug || payload.restaurant_slug;
+          console.log('🔍 API: Using restaurant data from JWT token:', { id: restaurantId, slug: restaurantSlug });
         } catch (e) {
           console.warn('Could not decode JWT token:', e);
         }
       }
       
       // Fallback to localStorage if JWT decoding failed or development token
-      if (!restaurantId) {
+      if (!restaurantId || !restaurantSlug) {
         restaurantId = localStorage.getItem('restaurantId');
         
-        // If no restaurant ID, try to parse it from the stored restaurant data
-        if (!restaurantId) {
+        // If no restaurant data, try to parse it from the stored restaurant data
+        if (!restaurantId || !restaurantSlug) {
           try {
             const restaurantData = localStorage.getItem('currentRestaurant');
             if (restaurantData) {
               const parsed = JSON.parse(restaurantData);
-              restaurantId = parsed.id;
+              restaurantId = restaurantId || parsed.id;
+              restaurantSlug = restaurantSlug || parsed.slug;
             }
           } catch (e) {
             console.warn('Could not parse restaurant data from localStorage');
           }
         }
-        console.log('🔍 API: Using restaurant ID from localStorage:', restaurantId);
+        console.log('🔍 API: Using restaurant data from localStorage:', { id: restaurantId, slug: restaurantSlug });
       }
       
       return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',
-        'X-Restaurant-Id': restaurantId || ''
+        'X-Restaurant-Id': restaurantId || '',
+        'X-Restaurant-Slug': restaurantSlug || ''
       };
     } catch (error) {
       console.error('Error accessing localStorage:', error);
       return {
         'Content-Type': 'application/json',
         'Authorization': '',
-        'X-Restaurant-Id': ''
+        'X-Restaurant-Id': '',
+        'X-Restaurant-Slug': ''
       };
     }
   }
@@ -480,10 +486,7 @@ class ApiService {
 
   async getOrderDetails(restaurantId, id) {
     const response = await fetch(`${this.baseURL}${ENDPOINTS.ORDERS.BASE}/${id}`, {
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      }
+      headers: this.getRestaurantHeaders()
     });
 
     return this.handleResponse(response);
@@ -678,10 +681,7 @@ class ApiService {
   async getFeedbacks(restaurantId) {
     const response = await fetch(`${this.baseURL}/api/feedbacks`, {
       method: 'GET',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      }
+      headers: this.getRestaurantHeaders()
     });
     return this.handleResponse(response);
   }
@@ -690,13 +690,10 @@ class ApiService {
     const params = new URLSearchParams();
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    
+
     const response = await fetch(`${this.baseURL}/api/feedbacks/by-date?${params}`, {
       method: 'GET',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      }
+      headers: this.getRestaurantHeaders()
     });
     return this.handleResponse(response);
   }
@@ -704,10 +701,7 @@ class ApiService {
   async getFeedbackStats(restaurantId) {
     const response = await fetch(`${this.baseURL}/api/feedbacks/stats`, {
       method: 'GET',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      }
+      headers: this.getRestaurantHeaders()
     });
     return this.handleResponse(response);
   }
@@ -715,10 +709,7 @@ class ApiService {
   async getFeedbackById(restaurantId, feedbackId) {
     const response = await fetch(`${this.baseURL}/api/feedbacks/${feedbackId}`, {
       method: 'GET',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      }
+      headers: this.getRestaurantHeaders()
     });
     return this.handleResponse(response);
   }
@@ -726,10 +717,7 @@ class ApiService {
   async createFeedback(restaurantId, feedbackData) {
     const response = await fetch(`${this.baseURL}/api/feedbacks`, {
       method: 'POST',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      },
+      headers: this.getRestaurantHeaders(),
       body: JSON.stringify(feedbackData)
     });
     return this.handleResponse(response);
@@ -738,10 +726,7 @@ class ApiService {
   async respondToFeedback(restaurantId, feedbackId, responseText) {
     const response = await fetch(`${this.baseURL}/api/feedbacks/${feedbackId}/respond`, {
       method: 'POST',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      },
+      headers: this.getRestaurantHeaders(),
       body: JSON.stringify({ response_text: responseText })
     });
     return this.handleResponse(response);
@@ -750,10 +735,7 @@ class ApiService {
   async updateFeedbackVerification(restaurantId, feedbackId, isVerified) {
     const response = await fetch(`${this.baseURL}/api/feedbacks/${feedbackId}/verify`, {
       method: 'PATCH',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      },
+      headers: this.getRestaurantHeaders(),
       body: JSON.stringify({ is_verified: isVerified })
     });
     return this.handleResponse(response);
@@ -762,10 +744,7 @@ class ApiService {
   async deleteFeedback(restaurantId, feedbackId) {
     const response = await fetch(`${this.baseURL}/api/feedbacks/${feedbackId}`, {
       method: 'DELETE',
-      headers: {
-        ...this.getRestaurantHeaders(),
-        'X-Restaurant-Id': restaurantId
-      }
+      headers: this.getRestaurantHeaders()
     });
     return this.handleResponse(response);
   }
