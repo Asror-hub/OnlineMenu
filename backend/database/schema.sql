@@ -299,6 +299,19 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Create triggers for updated_at (drop existing ones first)
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+DROP TRIGGER IF EXISTS update_restaurants_updated_at ON restaurants;
+DROP TRIGGER IF EXISTS update_categories_updated_at ON categories;
+DROP TRIGGER IF EXISTS update_subcategories_updated_at ON subcategories;
+DROP TRIGGER IF EXISTS update_menu_items_updated_at ON menu_items;
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
+DROP TRIGGER IF EXISTS update_reservations_updated_at ON reservations;
+DROP TRIGGER IF EXISTS update_restaurant_settings_updated_at ON restaurant_settings;
+DROP TRIGGER IF EXISTS update_restaurant_branding_updated_at ON restaurant_branding;
+DROP TRIGGER IF EXISTS update_restaurant_staff_updated_at ON restaurant_staff;
+DROP TRIGGER IF EXISTS update_restaurant_content_updated_at ON restaurant_content;
+
 -- Create triggers for updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_restaurants_updated_at BEFORE UPDATE ON restaurants FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
