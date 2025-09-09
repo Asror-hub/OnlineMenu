@@ -125,7 +125,22 @@ ALTER TABLE restaurant_content ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEF
 
 -- Add missing columns to restaurant_settings table (already added to table definition above)
 -- Remove NOT NULL constraint from setting_key to allow direct inserts
-ALTER TABLE restaurant_settings ALTER COLUMN setting_key DROP NOT NULL;
+-- This is critical for the auth.js registration code to work
+DO $$ 
+BEGIN
+    -- Check if the constraint exists before trying to drop it
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'restaurant_settings' 
+        AND column_name = 'setting_key' 
+        AND is_nullable = 'NO'
+    ) THEN
+        ALTER TABLE restaurant_settings ALTER COLUMN setting_key DROP NOT NULL;
+        RAISE NOTICE 'Dropped NOT NULL constraint from setting_key column';
+    ELSE
+        RAISE NOTICE 'setting_key column is already nullable or does not exist';
+    END IF;
+END $$;
 
 -- Add ALL missing columns to restaurant_settings table for social media and WiFi settings
 ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS wifi_name VARCHAR(100);
