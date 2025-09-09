@@ -200,7 +200,7 @@ export const AuthProvider = ({ children }) => {
       
       if (result.user.restaurant_slug && result.user.restaurant_slug !== 'null' && result.user.restaurant_slug !== 'undefined') {
         console.log('AuthContext: Auto-redirecting to admin panel');
-        const redirectUrl = `/${result.user.restaurant_slug}/admin`;
+        const redirectUrl = `/#/${result.user.restaurant_slug}/admin`;
         console.log('AuthContext: Redirect URL:', redirectUrl);
         
         // Use window.location.href for more reliable redirect
@@ -209,7 +209,7 @@ export const AuthProvider = ({ children }) => {
         console.warn('AuthContext: No valid restaurant_slug found, redirecting to default admin');
         console.log('AuthContext: restaurant_slug was:', result.user.restaurant_slug);
         // Fallback to a default admin route or show an error
-        window.location.href = '/admin';
+        window.location.href = '/#/admin';
       }
       
       return { success: true, user: result.user };
