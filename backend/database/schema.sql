@@ -115,6 +115,18 @@ ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS open_time TIME DEFAULT '09:00:0
 ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS close_time TIME DEFAULT '22:00:00';
 ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'UTC';
 
+-- Add missing columns to users table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE SET NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(100);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+
+-- Add missing columns to restaurant_content table
+ALTER TABLE restaurant_content ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
+
+-- Add missing columns to restaurant_settings table
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS restaurant_name VARCHAR(100);
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS description TEXT;
+
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
