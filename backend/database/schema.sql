@@ -105,6 +105,9 @@ CREATE TABLE IF NOT EXISTS menu_items (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Add missing columns to existing tables (for production updates)
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS subcategory_id INTEGER REFERENCES subcategories(id) ON DELETE SET NULL;
+
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
