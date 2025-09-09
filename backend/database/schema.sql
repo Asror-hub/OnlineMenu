@@ -7,9 +7,12 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255),
+    password VARCHAR(255),
+    name VARCHAR(100),
+    restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE SET NULL,
     role VARCHAR(20) DEFAULT 'customer' CHECK (role IN ('customer', 'admin', 'restaurant_owner')),
     phone VARCHAR(20),
     address TEXT,
@@ -119,6 +122,12 @@ ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'U
 ALTER TABLE users ADD COLUMN IF NOT EXISTS restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE SET NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(100);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+
+-- Make username nullable since the code doesn't always provide it
+ALTER TABLE users ALTER COLUMN username DROP NOT NULL;
+
+-- Make password_hash nullable since the code uses 'password' column instead
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
 
 -- Add missing columns to restaurant_content table
 ALTER TABLE restaurant_content ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
