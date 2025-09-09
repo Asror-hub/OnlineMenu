@@ -22,13 +22,18 @@ CREATE TABLE IF NOT EXISTS restaurants (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) UNIQUE NOT NULL,
+    domain VARCHAR(255),
     description TEXT,
     phone VARCHAR(20),
     email VARCHAR(100),
     address TEXT,
+    google_maps_link TEXT,
     primary_color VARCHAR(7) DEFAULT '#000000',
     secondary_color VARCHAR(7) DEFAULT '#ffffff',
     logo_url VARCHAR(500),
+    open_time TIME DEFAULT '09:00:00',
+    close_time TIME DEFAULT '22:00:00',
+    timezone VARCHAR(50) DEFAULT 'UTC',
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -142,6 +147,20 @@ CREATE TABLE IF NOT EXISTS restaurant_settings (
     UNIQUE(restaurant_id, setting_key)
 );
 
+-- Restaurant branding
+CREATE TABLE IF NOT EXISTS restaurant_branding (
+    id SERIAL PRIMARY KEY,
+    restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+    primary_color VARCHAR(7) DEFAULT '#000000',
+    secondary_color VARCHAR(7) DEFAULT '#ffffff',
+    accent_color VARCHAR(7) DEFAULT '#FF6B6B',
+    font_family VARCHAR(100) DEFAULT 'Arial',
+    logo_url VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(restaurant_id)
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_orders_restaurant_id ON orders(restaurant_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
@@ -238,3 +257,4 @@ CREATE TRIGGER update_menu_items_updated_at BEFORE UPDATE ON menu_items FOR EACH
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_reservations_updated_at BEFORE UPDATE ON reservations FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_restaurant_settings_updated_at BEFORE UPDATE ON restaurant_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_restaurant_branding_updated_at BEFORE UPDATE ON restaurant_branding FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
