@@ -51,9 +51,13 @@ const extractRestaurantContext = async (req, res, next) => {
                 console.log('  Restaurant found:', restaurant ? 'YES' : 'NO');
                 if (restaurant) {
                     console.log('  Restaurant details:', { id: restaurant.id, name: restaurant.name, slug: restaurant.slug, is_active: restaurant.is_active });
+                } else {
+                    console.log('  ❌ Restaurant not found for slug:', headerRestaurant);
                 }
             } catch (error) {
-                console.error('  Error in getRestaurantBySlug:', error);
+                console.error('  ❌ Error in getRestaurantBySlug:', error);
+                console.error('  Error details:', error.message);
+                console.error('  Error stack:', error.stack);
                 throw error;
             }
         } else if (headerRestaurantId) {
