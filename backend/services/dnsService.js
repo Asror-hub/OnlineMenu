@@ -177,11 +177,11 @@ class DNSService {
         const baseUrl = process.env.CLIENT_APP_URL || 'https://onlinemenu-9qqd.onrender.com';
         const adminUrl = process.env.ADMIN_APP_URL || 'https://onlinemenuadmin.onrender.com';
 
-        // Use path-based routing for better compatibility and easier setup
+        // Use hash-based routing for better compatibility with static hosting
         return {
-            website: `${baseUrl}/${slug}`,
-            tableQR: `${baseUrl}/${slug}/table/{tableNumber}`,
-            admin: `${adminUrl}/${slug}/admin`,
+            website: `${baseUrl}/#/${slug}`,
+            tableQR: `${baseUrl}/#/${slug}/table/{tableNumber}`,
+            admin: `${adminUrl}/#/${slug}/admin`,
             api: `${process.env.API_BASE_URL || 'https://online-menu-backend.onrender.com/api'}/restaurants/${restaurantId}`
         };
     }

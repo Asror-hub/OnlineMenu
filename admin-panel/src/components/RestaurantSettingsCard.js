@@ -209,11 +209,11 @@ const RestaurantSettingsCard = ({ restaurant }) => {
     const baseUrl = process.env.REACT_APP_CLIENT_URL || 'https://onlinemenu-9qqd.onrender.com';
     const adminUrl = process.env.REACT_APP_ADMIN_URL || 'https://onlinemenuadmin.onrender.com';
     
-    // Use path-based routing for better compatibility and easier setup
+    // Use hash-based routing for better compatibility with static hosting
     return {
-      website: `${baseUrl}/${restaurant.slug}`,
-      tableQR: `${baseUrl}/${restaurant.slug}/table/{tableNumber}`,
-      admin: `${adminUrl}/${restaurant.slug}/admin`
+      website: `${baseUrl}/#/${restaurant.slug}`,
+      tableQR: `${baseUrl}/#/${restaurant.slug}/table/{tableNumber}`,
+      admin: `${adminUrl}/#/${restaurant.slug}/admin`
     };
   };
 
