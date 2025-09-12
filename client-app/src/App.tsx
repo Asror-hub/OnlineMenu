@@ -15,6 +15,11 @@ import ReservationButton from './components/Reservation/ReservationButton';
 import api, { MenuItem, Category } from './services/api';
 import { getRestaurantContext } from './config/api';
 
+// Debug: Log that the app is starting
+console.log('🚀 Client App: Starting to load...');
+console.log('🚀 Client App: Current URL:', window.location.href);
+console.log('🚀 Client App: User Agent:', navigator.userAgent);
+
 const AppContainer = styled.div`
   min-height: 100vh;
   background: var(--color-gray-50);
@@ -307,14 +312,27 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  return (
-    <RestaurantProvider>
-      <OrderProvider>
-        <GlobalStyles />
-        <AppContent />
-      </OrderProvider>
-    </RestaurantProvider>
-  );
+  console.log('🚀 Client App: App component rendering...');
+  
+  try {
+    return (
+      <RestaurantProvider>
+        <OrderProvider>
+          <GlobalStyles />
+          <AppContent />
+        </OrderProvider>
+      </RestaurantProvider>
+    );
+  } catch (error) {
+    console.error('❌ Client App: Error in App component:', error);
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h1>App Error</h1>
+        <p>Something went wrong loading the app.</p>
+        <p>Error: {error.message}</p>
+      </div>
+    );
+  }
 };
 
 export default App;
