@@ -18,7 +18,11 @@ const extractRestaurantContext = async (req, res, next) => {
         // Debug logging
         console.log('🔍 Restaurant Context Debug:');
         console.log('  Path:', req.path);
+        console.log('  Method:', req.method);
         console.log('  Headers:', req.headers);
+        console.log('  User-Agent:', req.get('user-agent'));
+        console.log('  X-Restaurant-Slug (lowercase):', req.get('x-restaurant-slug'));
+        console.log('  X-Restaurant-Slug (uppercase):', req.get('X-Restaurant-Slug'));
 
         // Method 1: Extract from custom header (highest priority for API calls)
         const headerRestaurant = req.get('x-restaurant-slug') || req.get('X-Restaurant-Slug');
