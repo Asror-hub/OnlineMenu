@@ -173,16 +173,29 @@ class ApiService {
 
   // Restaurant Info APIs
   async getRestaurantInfo(): Promise<RestaurantInfo> {
-    console.log('🔍 API: Getting restaurant info...');
-    console.log('🔍 API: Current context:', getRestaurantContext());
-    console.log('🔍 API: Headers:', this.api.defaults.headers);
+    console.log('🔍 API: Getting restaurant info - DETAILED DEBUG:');
+    console.log('  Current context:', getRestaurantContext());
+    console.log('  API base URL:', this.api.defaults.baseURL);
+    console.log('  API headers:', this.api.defaults.headers);
+    console.log('  Request headers that will be sent:', {
+      'X-Restaurant-Slug': getRestaurantContext().restaurantSlug,
+      'X-Session-Id': getSessionId()
+    });
     
     try {
+      console.log('  Making request to:', '/api/restaurants/public/info');
       const response = await this.api.get('/api/restaurants/public/info');
-      console.log('✅ API: Restaurant info loaded:', response.data);
+      console.log('✅ API: Restaurant info loaded successfully:');
+      console.log('  Response status:', response.status);
+      console.log('  Response data:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ API: Failed to get restaurant info:', error.response?.data || error.message);
+      console.error('❌ API: Failed to get restaurant info:');
+      console.error('  Error message:', error.message);
+      console.error('  Error response:', error.response?.data);
+      console.error('  Error status:', error.response?.status);
+      console.error('  Error headers:', error.response?.headers);
+      console.error('  Full error:', error);
       throw error;
     }
   }

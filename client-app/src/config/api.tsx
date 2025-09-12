@@ -30,41 +30,64 @@ export const ENDPOINTS = {
 export const getRestaurantContext = () => {
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
+  const fullUrl = window.location.href;
   
-  console.log('🔍 Restaurant Context Detection:', { hostname, pathname });
+  console.log('🔍 Restaurant Context Detection - DETAILED DEBUG:');
+  console.log('  Full URL:', fullUrl);
+  console.log('  Hostname:', hostname);
+  console.log('  Pathname:', pathname);
+  console.log('  Search:', window.location.search);
+  console.log('  Hash:', window.location.hash);
   
   let restaurantSlug = null;
   let isSubdomain = false;
   let isPathBased = false;
   
   // Check for subdomain-based routing first
+  console.log('🔍 Checking subdomain routing...');
   const parts = hostname.split('.');
+  console.log('  Hostname parts:', parts);
+  
   if (parts.length > 1) {
     if (hostname.includes('localhost')) {
       // Development: restaurant-slug.localhost:3000
       restaurantSlug = parts[0];
       isSubdomain = true;
+      console.log('  ✅ Development subdomain detected:', restaurantSlug);
     } else {
       // Production: restaurant-slug.yourapp.com
       restaurantSlug = parts[0];
       isSubdomain = true;
+      console.log('  ✅ Production subdomain detected:', restaurantSlug);
     }
     
     // Skip common subdomains
     if (restaurantSlug && ['www', 'api', 'admin', 'app'].includes(restaurantSlug)) {
+      console.log('  ❌ Skipping common subdomain:', restaurantSlug);
       restaurantSlug = null;
       isSubdomain = false;
     }
+  } else {
+    console.log('  ❌ No subdomain detected (parts.length <= 1)');
   }
   
   // If no subdomain found, check for path-based routing
+  console.log('🔍 Checking path-based routing...');
   if (!restaurantSlug && pathname && pathname !== '/') {
+    console.log('  Pathname is not root, extracting slug...');
     // Extract restaurant slug from path: /asror3 -> asror3
     const pathParts = pathname.split('/').filter(part => part.length > 0);
+    console.log('  Path parts:', pathParts);
+    
     if (pathParts.length > 0) {
       restaurantSlug = pathParts[0];
       isPathBased = true;
+      console.log('  ✅ Path-based slug detected:', restaurantSlug);
+    } else {
+      console.log('  ❌ No valid path parts found');
     }
+  } else {
+    console.log('  ❌ No path-based routing (restaurantSlug exists or pathname is root)');
   }
   
   const result = {
@@ -76,7 +99,11 @@ export const getRestaurantContext = () => {
     pathname,
   };
   
-  console.log('✅ Restaurant Context Result:', result);
+  console.log('✅ Restaurant Context Final Result:', result);
+  console.log('  Restaurant Slug:', result.restaurantSlug);
+  console.log('  Is Subdomain:', result.isSubdomain);
+  console.log('  Is Path Based:', result.isPathBased);
+  console.log('  Has Restaurant Context:', result.hasRestaurantContext);
   
   return result;
 };
