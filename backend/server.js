@@ -103,13 +103,17 @@ app.get('/api/test-db', async (req, res) => {
     const usersResult = await pool.query('SELECT COUNT(*) as user_count FROM users');
     const restaurantsResult = await pool.query('SELECT COUNT(*) as restaurant_count FROM restaurants');
     
+    // Get all restaurants with their slugs
+    const allRestaurantsResult = await pool.query('SELECT id, name, slug, is_active FROM restaurants ORDER BY id');
+    
     res.json({
       success: true,
       message: 'Database connection successful',
       currentTime: result.rows[0].current_time,
       tables: tablesResult.rows.map(row => row.table_name),
       userCount: parseInt(usersResult.rows[0].user_count),
-      restaurantCount: parseInt(restaurantsResult.rows[0].restaurant_count)
+      restaurantCount: parseInt(restaurantsResult.rows[0].restaurant_count),
+      restaurants: allRestaurantsResult.rows
     });
   } catch (error) {
     console.error('Database test error:', error);
