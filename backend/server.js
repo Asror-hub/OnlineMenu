@@ -159,6 +159,34 @@ app.get('/api/test-restaurant/:slug', async (req, res) => {
   }
 });
 
+// Test restaurant service endpoint
+app.get('/api/test-restaurant-service/:id', async (req, res) => {
+  try {
+    const restaurantService = require('./services/restaurantService');
+    const { id } = req.params;
+    
+    console.log('🔍 Testing restaurant service for ID:', id);
+    
+    const restaurant = await restaurantService.getRestaurantById(parseInt(id));
+    console.log('  Restaurant service result:', restaurant ? 'FOUND' : 'NOT FOUND');
+    
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+    
+    res.json({
+      success: true,
+      restaurant: restaurant
+    });
+  } catch (error) {
+    console.error('Test restaurant service error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Create default admin user endpoint
 app.post('/api/create-default-admin', async (req, res) => {
   try {
