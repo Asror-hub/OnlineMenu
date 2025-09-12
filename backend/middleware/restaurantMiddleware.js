@@ -34,7 +34,7 @@ const extractRestaurantContext = async (req, res, next) => {
         console.log('  Path Restaurant:', pathRestaurant);
         
         // Method 4: Extract from custom header
-        const headerRestaurant = req.get('x-restaurant-slug');
+        const headerRestaurant = req.get('x-restaurant-slug') || req.get('X-Restaurant-Slug');
         const headerRestaurantId = req.get('x-restaurant-id') || req.get('X-Restaurant-Id');
         console.log('  Header Restaurant Slug:', headerRestaurant);
         console.log('  Header Restaurant ID:', headerRestaurantId);
