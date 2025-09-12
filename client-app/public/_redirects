@@ -1,9 +1,2 @@
-# SPA routing for React app
+# SPA routing for React app - catch all routes
 /*    /index.html   200
-
-# Specific paths for restaurant routing
-/asror3    /index.html   200
-/asror3/*    /index.html   200
-
-# Fallback for any path
-/restaurant/*    /index.html   200
