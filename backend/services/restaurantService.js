@@ -12,7 +12,8 @@ class RestaurantService {
      */
     async getRestaurantById(restaurantId) {
         try {
-            const query = `
+            // First try the full query with all columns
+            let query = `
                 SELECT 
                     r.*,
                     rs.wifi_name, rs.wifi_password, rs.instagram, rs.facebook, 
@@ -25,8 +26,38 @@ class RestaurantService {
                 WHERE r.id = $1 AND r.is_active = true
             `;
             
-            const result = await pool.query(query, [restaurantId]);
-            return result.rows[0] || null;
+            try {
+                const result = await pool.query(query, [restaurantId]);
+                return result.rows[0] || null;
+            } catch (error) {
+                console.log('Full query failed, trying simplified query:', error.message);
+                
+                // If the full query fails (missing columns), try a simplified version
+                const simplifiedQuery = `
+                    SELECT 
+                        r.*,
+                        rs.wifi_name, rs.wifi_password, rs.instagram, rs.facebook, 
+                        rs.trip_advisor, rs.whatsapp, rs.telegram, rs.custom_social_media,
+                        rb.primary_color, rb.secondary_color, rb.accent_color, 
+                        rb.font_family, rb.logo_url
+                    FROM restaurants r
+                    LEFT JOIN restaurant_settings rs ON r.id = rs.restaurant_id
+                    LEFT JOIN restaurant_branding rb ON r.id = rb.restaurant_id
+                    WHERE r.id = $1 AND r.is_active = true
+                `;
+                
+                const result = await pool.query(simplifiedQuery, [restaurantId]);
+                const restaurant = result.rows[0] || null;
+                
+                // Add missing columns with default values
+                if (restaurant) {
+                    restaurant.favicon_url = null;
+                    restaurant.hero_image_url = null;
+                    restaurant.custom_css = null;
+                }
+                
+                return restaurant;
+            }
         } catch (error) {
             console.error('Error getting restaurant by ID:', error);
             throw new Error('Failed to get restaurant details');
