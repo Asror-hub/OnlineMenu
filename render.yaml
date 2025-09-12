@@ -23,6 +23,7 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+        statusCode: 200
 
   # Admin Panel
   - type: web

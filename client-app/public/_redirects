@@ -4,3 +4,6 @@
 # Specific paths for restaurant routing
 /asror3    /index.html   200
 /asror3/*    /index.html   200
+
+# Fallback for any path
+/restaurant/*    /index.html   200
