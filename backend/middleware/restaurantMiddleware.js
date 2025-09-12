@@ -46,7 +46,16 @@ const extractRestaurantContext = async (req, res, next) => {
         // Priority: Header > Custom Domain > Subdomain > Path > Default
         if (headerRestaurant) {
             console.log('  Trying header restaurant slug lookup...');
-            restaurant = await getRestaurantBySlug(headerRestaurant);
+            try {
+                restaurant = await getRestaurantBySlug(headerRestaurant);
+                console.log('  Restaurant found:', restaurant ? 'YES' : 'NO');
+                if (restaurant) {
+                    console.log('  Restaurant details:', { id: restaurant.id, name: restaurant.name, slug: restaurant.slug, is_active: restaurant.is_active });
+                }
+            } catch (error) {
+                console.error('  Error in getRestaurantBySlug:', error);
+                throw error;
+            }
         } else if (headerRestaurantId) {
             console.log('  Trying header restaurant ID lookup...');
             restaurant = await getRestaurantById(headerRestaurantId);
