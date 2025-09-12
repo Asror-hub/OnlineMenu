@@ -329,7 +329,7 @@ const App: React.FC = () => {
       <div style={{ padding: '20px', textAlign: 'center' }}>
         <h1>App Error</h1>
         <p>Something went wrong loading the app.</p>
-        <p>Error: {error.message}</p>
+        <p>Error: {error instanceof Error ? error.message : String(error)}</p>
       </div>
     );
   }
