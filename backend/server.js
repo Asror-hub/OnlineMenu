@@ -233,6 +233,49 @@ app.get('/api/test-simple-restaurant/:id', async (req, res) => {
   }
 });
 
+// Test database schema
+app.get('/api/test-schema', async (req, res) => {
+  try {
+    const { pool } = require('./database/connection');
+    
+    console.log('🔍 Testing database schema...');
+    
+    // Check if restaurant_branding table has the required columns
+    const schemaQuery = `
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_name = 'restaurant_branding' 
+        ORDER BY ordinal_position
+    `;
+    
+    const schemaResult = await pool.query(schemaQuery);
+    console.log('  restaurant_branding columns:', schemaResult.rows);
+    
+    // Check if restaurant_settings table has the required columns
+    const settingsSchemaQuery = `
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_name = 'restaurant_settings' 
+        ORDER BY ordinal_position
+    `;
+    
+    const settingsSchemaResult = await pool.query(settingsSchemaQuery);
+    console.log('  restaurant_settings columns:', settingsSchemaResult.rows);
+    
+    res.json({
+      success: true,
+      restaurant_branding_columns: schemaResult.rows,
+      restaurant_settings_columns: settingsSchemaResult.rows
+    });
+  } catch (error) {
+    console.error('Test schema error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Create default admin user endpoint
 app.post('/api/create-default-admin', async (req, res) => {
   try {
