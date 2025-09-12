@@ -125,6 +125,40 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Test restaurant endpoint (bypasses middleware)
+app.get('/api/test-restaurant/:slug', async (req, res) => {
+  try {
+    const { pool } = require('./database/connection');
+    const { slug } = req.params;
+    
+    console.log('🔍 Testing restaurant lookup for slug:', slug);
+    
+    const query = `
+      SELECT * FROM restaurants 
+      WHERE slug = $1 AND is_active = true
+    `;
+    
+    const result = await pool.query(query, [slug]);
+    console.log('  Query result rows:', result.rows.length);
+    console.log('  First row:', result.rows[0] || 'No rows');
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+    
+    res.json({
+      success: true,
+      restaurant: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Test restaurant error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Create default admin user endpoint
 app.post('/api/create-default-admin', async (req, res) => {
   try {
