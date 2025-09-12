@@ -187,6 +187,52 @@ app.get('/api/test-restaurant-service/:id', async (req, res) => {
   }
 });
 
+// Test simplified restaurant query
+app.get('/api/test-simple-restaurant/:id', async (req, res) => {
+  try {
+    const { pool } = require('./database/connection');
+    const { id } = req.params;
+    
+    console.log('🔍 Testing simple restaurant query for ID:', id);
+    
+    // Test the exact query from restaurantService
+    const query = `
+        SELECT 
+            r.*,
+            rs.wifi_name, rs.wifi_password, rs.instagram, rs.facebook, 
+            rs.trip_advisor, rs.whatsapp, rs.telegram, rs.custom_social_media,
+            rb.primary_color, rb.secondary_color, rb.accent_color, 
+            rb.font_family, rb.logo_url, rb.favicon_url, rb.hero_image_url, rb.custom_css
+        FROM restaurants r
+        LEFT JOIN restaurant_settings rs ON r.id = rs.restaurant_id
+        LEFT JOIN restaurant_branding rb ON r.id = rb.restaurant_id
+        WHERE r.id = $1 AND r.is_active = true
+    `;
+    
+    console.log('  Query:', query);
+    console.log('  Parameters:', [id]);
+    
+    const result = await pool.query(query, [id]);
+    console.log('  Query result rows:', result.rows.length);
+    console.log('  First row:', result.rows[0] || 'No rows');
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+    
+    res.json({
+      success: true,
+      restaurant: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Test simple restaurant query error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Create default admin user endpoint
 app.post('/api/create-default-admin', async (req, res) => {
   try {
