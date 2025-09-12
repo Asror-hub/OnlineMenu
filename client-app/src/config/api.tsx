@@ -43,37 +43,9 @@ export const getRestaurantContext = () => {
   let isSubdomain = false;
   let isPathBased = false;
   
-  // Check for subdomain-based routing first
-  console.log('🔍 Checking subdomain routing...');
-  const parts = hostname.split('.');
-  console.log('  Hostname parts:', parts);
-  
-  if (parts.length > 1) {
-    if (hostname.includes('localhost')) {
-      // Development: restaurant-slug.localhost:3000
-      restaurantSlug = parts[0];
-      isSubdomain = true;
-      console.log('  ✅ Development subdomain detected:', restaurantSlug);
-    } else {
-      // Production: restaurant-slug.yourapp.com
-      restaurantSlug = parts[0];
-      isSubdomain = true;
-      console.log('  ✅ Production subdomain detected:', restaurantSlug);
-    }
-    
-    // Skip common subdomains
-    if (restaurantSlug && ['www', 'api', 'admin', 'app'].includes(restaurantSlug)) {
-      console.log('  ❌ Skipping common subdomain:', restaurantSlug);
-      restaurantSlug = null;
-      isSubdomain = false;
-    }
-  } else {
-    console.log('  ❌ No subdomain detected (parts.length <= 1)');
-  }
-  
-  // If no subdomain found, check for hash-based routing
+  // Check for hash-based routing first (highest priority)
   console.log('🔍 Checking hash-based routing...');
-  if (!restaurantSlug && window.location.hash) {
+  if (window.location.hash) {
     console.log('  Hash found, extracting slug...');
     // Extract restaurant slug from hash: #/asror3 -> asror3
     const hashParts = window.location.hash.split('/').filter(part => part.length > 0);
@@ -87,7 +59,39 @@ export const getRestaurantContext = () => {
       console.log('  ❌ No valid hash parts found');
     }
   } else {
-    console.log('  ❌ No hash-based routing (restaurantSlug exists or no hash)');
+    console.log('  ❌ No hash-based routing (no hash)');
+  }
+  
+  // If no hash found, check for subdomain-based routing
+  console.log('🔍 Checking subdomain routing...');
+  if (!restaurantSlug) {
+    const parts = hostname.split('.');
+    console.log('  Hostname parts:', parts);
+    
+    if (parts.length > 1) {
+      if (hostname.includes('localhost')) {
+        // Development: restaurant-slug.localhost:3000
+        restaurantSlug = parts[0];
+        isSubdomain = true;
+        console.log('  ✅ Development subdomain detected:', restaurantSlug);
+      } else {
+        // Production: restaurant-slug.yourapp.com
+        restaurantSlug = parts[0];
+        isSubdomain = true;
+        console.log('  ✅ Production subdomain detected:', restaurantSlug);
+      }
+      
+      // Skip common subdomains
+      if (restaurantSlug && ['www', 'api', 'admin', 'app'].includes(restaurantSlug)) {
+        console.log('  ❌ Skipping common subdomain:', restaurantSlug);
+        restaurantSlug = null;
+        isSubdomain = false;
+      }
+    } else {
+      console.log('  ❌ No subdomain detected (parts.length <= 1)');
+    }
+  } else {
+    console.log('  ❌ Skipping subdomain check (restaurantSlug already found from hash)');
   }
   
   const result = {
