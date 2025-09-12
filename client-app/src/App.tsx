@@ -161,6 +161,9 @@ const AppContent: React.FC = () => {
   // Check if we have a restaurant context (subdomain or path-based)
   const restaurantContext = getRestaurantContext();
   const hasRestaurantContext = restaurantContext.hasRestaurantContext;
+  
+  console.log('🏪 App Component - Restaurant Context:', restaurantContext);
+  console.log('🏪 App Component - Has Restaurant Context:', hasRestaurantContext);
 
   // Load menu data
   useEffect(() => {

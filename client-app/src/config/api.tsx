@@ -31,6 +31,8 @@ export const getRestaurantContext = () => {
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
   
+  console.log('🔍 Restaurant Context Detection:', { hostname, pathname });
+  
   let restaurantSlug = null;
   let isSubdomain = false;
   let isPathBased = false;
@@ -65,7 +67,7 @@ export const getRestaurantContext = () => {
     }
   }
   
-  return {
+  const result = {
     restaurantSlug,
     isSubdomain,
     isPathBased,
@@ -73,6 +75,10 @@ export const getRestaurantContext = () => {
     hostname,
     pathname,
   };
+  
+  console.log('✅ Restaurant Context Result:', result);
+  
+  return result;
 };
 
 // Generate session ID for guest orders
