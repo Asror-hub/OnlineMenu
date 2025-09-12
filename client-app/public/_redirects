@@ -1,1 +1,6 @@
+# SPA routing for React app
 /*    /index.html   200
+
+# Specific paths for restaurant routing
+/asror3    /index.html   200
+/asror3/*    /index.html   200
