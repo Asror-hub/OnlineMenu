@@ -20,36 +20,27 @@ const extractRestaurantContext = async (req, res, next) => {
         console.log('  Path:', req.path);
         console.log('  Headers:', req.headers);
 
-        // Method 1: Extract from subdomain (restaurant1.yourapp.com)
-        const host = req.get('host') || '';
-        const subdomain = host.includes(':') ? host.split(':')[0].split('.')[0] : host.split('.')[0];
-        console.log('  Host:', host, 'Subdomain:', subdomain);
+        // Method 1: Extract from custom header (highest priority for API calls)
+        const headerRestaurant = req.get('x-restaurant-slug') || req.get('X-Restaurant-Slug');
+        const headerRestaurantId = req.get('x-restaurant-id') || req.get('X-Restaurant-Id');
+        console.log('  Header Restaurant Slug:', headerRestaurant);
+        console.log('  Header Restaurant ID:', headerRestaurantId);
         
         // Method 2: Extract from custom domain header (if using reverse proxy)
         const customDomain = req.get('x-custom-domain') || req.get('x-forwarded-host');
         console.log('  Custom Domain:', customDomain);
         
-        // Method 3: Extract from path parameter (/restaurant1/...)
+        // Method 3: Extract from subdomain (restaurant1.yourapp.com)
+        const host = req.get('host') || '';
+        const subdomain = host.includes(':') ? host.split(':')[0].split('.')[0] : host.split('.')[0];
+        console.log('  Host:', host, 'Subdomain:', subdomain);
+        
+        // Method 4: Extract from path parameter (/restaurant1/...)
         const pathRestaurant = req.params.restaurant || req.query.restaurant;
         console.log('  Path Restaurant:', pathRestaurant);
-        
-        // Method 4: Extract from custom header
-        const headerRestaurant = req.get('x-restaurant-slug') || req.get('X-Restaurant-Slug');
-        const headerRestaurantId = req.get('x-restaurant-id') || req.get('X-Restaurant-Id');
-        console.log('  Header Restaurant Slug:', headerRestaurant);
-        console.log('  Header Restaurant ID:', headerRestaurantId);
 
-        // Priority: Custom Domain > Subdomain > Path > Header > Default
-        if (customDomain) {
-            console.log('  Trying custom domain lookup...');
-            restaurant = await getRestaurantByDomain(customDomain);
-        } else if (subdomain && subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'localhost') {
-            console.log('  Trying subdomain lookup...');
-            restaurant = await getRestaurantBySlug(subdomain);
-        } else if (pathRestaurant) {
-            console.log('  Trying path restaurant lookup...');
-            restaurant = await getRestaurantBySlug(pathRestaurant);
-        } else if (headerRestaurant) {
+        // Priority: Header > Custom Domain > Subdomain > Path > Default
+        if (headerRestaurant) {
             console.log('  Trying header restaurant slug lookup...');
             restaurant = await getRestaurantBySlug(headerRestaurant);
         } else if (headerRestaurantId) {
@@ -63,6 +54,15 @@ const extractRestaurantContext = async (req, res, next) => {
                     message: `Restaurant with ID ${headerRestaurantId} not found or inactive`
                 });
             }
+        } else if (customDomain) {
+            console.log('  Trying custom domain lookup...');
+            restaurant = await getRestaurantByDomain(customDomain);
+        } else if (subdomain && subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'localhost' && subdomain !== 'online-menu-backend') {
+            console.log('  Trying subdomain lookup...');
+            restaurant = await getRestaurantBySlug(subdomain);
+        } else if (pathRestaurant) {
+            console.log('  Trying path restaurant lookup...');
+            restaurant = await getRestaurantBySlug(pathRestaurant);
         }
 
         // If no restaurant found and no specific ID was provided, use default
