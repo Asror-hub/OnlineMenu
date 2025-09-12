@@ -1,4 +1,4 @@
--- Online Menu System Database Schema
+- Online Menu System Database Schema
 -- This file creates all necessary tables for the restaurant management system
 
 -- Enable UUID extension
@@ -161,6 +161,11 @@ ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(50);
 ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS telegram VARCHAR(50);
 ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS custom_social_media JSONB DEFAULT '[]';
 
+-- Add missing columns to restaurant_branding table
+ALTER TABLE restaurant_branding ADD COLUMN IF NOT EXISTS favicon_url VARCHAR(500);
+ALTER TABLE restaurant_branding ADD COLUMN IF NOT EXISTS hero_image_url VARCHAR(500);
+ALTER TABLE restaurant_branding ADD COLUMN IF NOT EXISTS custom_css TEXT;
+
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
@@ -251,6 +256,9 @@ CREATE TABLE IF NOT EXISTS restaurant_branding (
     accent_color VARCHAR(7) DEFAULT '#FF6B6B',
     font_family VARCHAR(100) DEFAULT 'Arial',
     logo_url VARCHAR(500),
+    favicon_url VARCHAR(500),
+    hero_image_url VARCHAR(500),
+    custom_css TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(restaurant_id)
