@@ -37,20 +37,27 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
 
   const loadRestaurantData = useCallback(async () => {
     try {
+      console.log('🔄 RestaurantContext: Starting to load restaurant data...');
       setLoading(true);
       setError(null);
 
       // Get fresh restaurant context
       const currentContext = getRestaurantContext();
+      console.log('🏪 RestaurantContext: Current context:', currentContext);
+      
       if (!currentContext.hasRestaurantContext) {
         throw new Error('No restaurant context found');
       }
 
+      console.log('🏪 RestaurantContext: Loading restaurant info and settings...');
       // Load restaurant info and settings in parallel
       const [restaurantData, settingsData] = await Promise.all([
         api.getRestaurantInfo(),
         api.getRestaurantSettings().catch(() => null), // Settings are optional
       ]);
+
+      console.log('✅ RestaurantContext: Restaurant data loaded:', restaurantData);
+      console.log('✅ RestaurantContext: Settings data loaded:', settingsData);
 
       setRestaurant(restaurantData);
       setSettings(settingsData);
@@ -66,7 +73,7 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
       }
 
     } catch (err: any) {
-      console.error('Failed to load restaurant data:', err);
+      console.error('❌ RestaurantContext: Failed to load restaurant data:', err);
       setError(err.response?.data?.message || err.message || 'Failed to load restaurant data');
       
       // Clear restaurant data on error

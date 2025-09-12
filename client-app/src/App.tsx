@@ -199,6 +199,7 @@ const AppContent: React.FC = () => {
 
   // Show loading screen
   if (loading) {
+    console.log('🔄 App is loading restaurant...');
     return (
       <LoadingScreen>
         <LoadingSpinner />
@@ -209,6 +210,7 @@ const AppContent: React.FC = () => {
 
   // Show error screen
   if (error) {
+    console.log('❌ App error:', error);
     return (
       <ErrorScreen>
         <ErrorIcon>⚠️</ErrorIcon>
@@ -237,6 +239,7 @@ const AppContent: React.FC = () => {
 
   // Show 404 screen if no subdomain is detected
   if (!hasRestaurantContext) {
+    console.log('❌ No restaurant context detected');
     return (
       <NotFoundScreen>
         <NotFoundTitle>Restaurant Not Found</NotFoundTitle>

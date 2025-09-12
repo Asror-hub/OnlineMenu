@@ -173,8 +173,18 @@ class ApiService {
 
   // Restaurant Info APIs
   async getRestaurantInfo(): Promise<RestaurantInfo> {
-    const response = await this.api.get('/api/restaurants/public/info');
-    return response.data;
+    console.log('🔍 API: Getting restaurant info...');
+    console.log('🔍 API: Current context:', getRestaurantContext());
+    console.log('🔍 API: Headers:', this.api.defaults.headers);
+    
+    try {
+      const response = await this.api.get('/api/restaurants/public/info');
+      console.log('✅ API: Restaurant info loaded:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('❌ API: Failed to get restaurant info:', error.response?.data || error.message);
+      throw error;
+    }
   }
 
   async getRestaurantSettings(): Promise<RestaurantSettings> {
