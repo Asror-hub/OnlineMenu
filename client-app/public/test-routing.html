@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>SPA Routing Test</h1>
+    <div class="info">
+        <h3>Current URL Info:</h3>
+        <p><strong>Full URL:</strong> <span id="fullUrl"></span></p>
+        <p><strong>Hostname:</strong> <span id="hostname"></span></p>
+        <p><strong>Pathname:</strong> <span id="pathname"></span></p>
+        <p><strong>Search:</strong> <span id="search"></span></p>
+        <p><strong>Hash:</strong> <span id="hash"></span></p>
+    </div>
+    
+    <div class="info">
+        <h3>Restaurant Detection Test:</h3>
+        <p><strong>Detected Slug:</strong> <span id="slug"></span></p>
+        <p><strong>Is Path-Based:</strong> <span id="isPathBased"></span></p>
+    </div>
+
+    <script>
+        // Show current URL info
+        document.getElementById('fullUrl').textContent = window.location.href;
+        document.getElementById('hostname').textContent = window.location.hostname;
+        document.getElementById('pathname').textContent = window.location.pathname;
+        document.getElementById('search').textContent = window.location.search;
+        document.getElementById('hash').textContent = window.location.hash;
+
+        // Test restaurant detection logic
+        const pathname = window.location.pathname;
+        let restaurantSlug = null;
+        
+        if (pathname && pathname !== '/') {
+            const pathParts = pathname.split('/').filter(part => part.length > 0);
+            if (pathParts.length > 0) {
+                restaurantSlug = pathParts[0];
+            }
+        }
+        
+        document.getElementById('slug').textContent = restaurantSlug || 'None detected';
+        document.getElementById('isPathBased').textContent = restaurantSlug ? 'Yes' : 'No';
+        
+        console.log('Routing Test - Restaurant slug:', restaurantSlug);
+    </script>
+</body>
+</html>
