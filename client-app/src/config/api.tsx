@@ -48,7 +48,14 @@ export const getRestaurantContext = () => {
   if (window.location.hash) {
     console.log('  Hash found, extracting slug...');
     // Extract restaurant slug from hash: #/asror3 -> asror3
-    const hashParts = window.location.hash.split('/').filter(part => part.length > 0);
+    const hash = window.location.hash;
+    console.log('  Raw hash:', hash);
+    
+    // Remove the # and split by /
+    const hashWithoutHash = hash.substring(1); // Remove the #
+    console.log('  Hash without #:', hashWithoutHash);
+    
+    const hashParts = hashWithoutHash.split('/').filter(part => part.length > 0);
     console.log('  Hash parts:', hashParts);
     
     if (hashParts.length > 0) {
