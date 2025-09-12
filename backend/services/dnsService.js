@@ -174,7 +174,7 @@ class DNSService {
      * @returns {Object} - Generated URLs
      */
     generateRestaurantURLs(slug, restaurantId) {
-        const baseUrl = process.env.CLIENT_APP_URL || 'https://onlinemenuclient.onrender.com';
+        const baseUrl = process.env.CLIENT_APP_URL || 'https://onlinemenu-9qqd.onrender.com';
         const adminUrl = process.env.ADMIN_APP_URL || 'https://onlinemenuadmin.onrender.com';
 
         // Use path-based routing for better compatibility and easier setup

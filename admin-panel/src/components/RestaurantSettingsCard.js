@@ -206,7 +206,7 @@ const RestaurantSettingsCard = ({ restaurant }) => {
 
   // Generate restaurant URLs
   const generateUrls = () => {
-    const baseUrl = process.env.REACT_APP_CLIENT_URL || 'https://onlinemenuclient.onrender.com';
+    const baseUrl = process.env.REACT_APP_CLIENT_URL || 'https://onlinemenu-9qqd.onrender.com';
     const adminUrl = process.env.REACT_APP_ADMIN_URL || 'https://onlinemenuadmin.onrender.com';
     
     // Use path-based routing for better compatibility and easier setup
